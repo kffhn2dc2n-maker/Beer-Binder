@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1a14">
+<title>Beer Binder</title>
+<style>
+:root{--bg:#0d1a14;--bg2:#15271d;--cream:#f5ecd7;--gold:#d9a441;--mut:#9fb3a5}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% -10%,#1f3d2d,var(--bg) 60%) fixed;color:var(--cream);min-height:100vh;padding-bottom:96px}
+h2,h3,h4,.logo,.stat b{font-family:Georgia,"Times New Roman",serif}
+main{max-width:960px;margin:auto;padding:16px 14px}
+.top,.row2{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.top{margin-bottom:14px}.logo{display:flex;gap:8px;align-items:center;font-size:22px;font-weight:700}
+.chip{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid #ffffff40;color:var(--mut)}.gold{color:var(--gold);border-color:var(--gold)}
+.panel{background:var(--bg2);border:1px solid #ffffff14;border-radius:16px;padding:14px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{background:#0003;border-radius:12px;padding:8px;text-align:center;font-size:12px;color:var(--mut)}.stat b{display:block;font-size:22px;color:var(--gold)}
+.bar{height:9px;border-radius:9px;background:#0006;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#a8751a,var(--gold));transition:width .6s}
+.mut,small.m{color:var(--mut)}.rar{display:flex;gap:10px;flex-wrap:wrap;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr)}}
+.hs{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px}.hs .card{flex:0 0 150px}
+.card{position:relative;border-radius:14px;background:var(--cream);color:#1b2a21;padding:8px 8px 10px;border:3px solid var(--rc);box-shadow:0 6px 16px #0006;cursor:pointer;overflow:hidden}
+.card.r4{box-shadow:0 0 18px #e8a93a88,0 6px 16px #0006}.card.r4::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,#fff8 50%,transparent 65%);background-size:250% 100%;animation:shine 3.5s infinite;pointer-events:none}
+@keyframes shine{from{background-position:150% 0}to{background-position:-100% 0}}
+.art{height:104px;border-radius:8px;background:linear-gradient(160deg,hsl(var(--h) 70% 55%),hsl(var(--h) 60% 20%));display:grid;place-items:center;background-size:cover}
+.art .q{font:700 40px Georgia;color:#fff6}
+.card h4{font-size:14px;margin-top:6px;line-height:1.2}.card small{display:block;color:#56665c;font-size:11px}
+.tag{display:inline-block;margin-top:5px;font-size:10px;font-weight:700;color:#10200f;padding:1px 8px;border-radius:99px}
+.card.lock{filter:grayscale(1);opacity:.4}
+.stamp{position:absolute;right:4px;top:62px;border:3px solid #b3261e;color:#b3261e;border-radius:8px;padding:0 5px;font:800 10px sans-serif;transform:rotate(-14deg);opacity:.85}
+.stamp.new{font-size:16px;top:90px;right:14px;animation:slam .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes slam{from{transform:scale(4) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(-14deg);opacity:.85}}
+.btn{background:#ffffff14;color:var(--cream);border:1px solid #ffffff30;border-radius:12px;padding:10px 14px;font:inherit;cursor:pointer;display:inline-block;text-align:center}
+.btn.pri{background:var(--gold);color:#1b1405;border-color:var(--gold);font-weight:700}.btn.on{border-color:var(--gold);color:var(--gold)}
+.btn:focus-visible,.card:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,nav button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+input,select,textarea{background:#0b1510;color:var(--cream);border:1px solid #ffffff30;border-radius:10px;padding:10px;font:inherit;width:100%;margin:4px 0}
+label.f{display:block;font-size:13px;color:var(--mut);margin-top:8px}
+.filters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0a130eee;backdrop-filter:blur(8px);display:flex;justify-content:center;border-top:1px solid #ffffff1c;padding-bottom:env(safe-area-inset-bottom,0)}
+nav button{flex:1;max-width:120px;background:none;border:0;color:var(--mut);padding:9px 2px;font:11px system-ui;cursor:pointer}nav button b{display:block;font-size:20px}nav .a{color:var(--gold)}
+.fab{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0));width:58px;height:58px;border-radius:50%;border:0;background:var(--gold);color:#1b1405;font-size:32px;cursor:pointer;box-shadow:0 6px 18px #000a;z-index:20}
+.ov{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet{background:var(--bg2);width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px}
+@media(min-width:600px){.ov{align-items:center}.sheet{border-radius:20px}}
+.flip{perspective:900px;margin-bottom:12px}.fi{position:relative;height:430px;transition:transform .6s;transform-style:preserve-3d;cursor:pointer}.fi.f{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;overflow:auto}.back{transform:rotateY(180deg);background:var(--cream);color:#1b2a21;padding:14px;border:4px solid var(--rc)}
+.back .bar{background:#0002}.front .card{height:100%;cursor:pointer;padding:12px}.front .art{height:220px}.front h4{font-size:22px}.front small{font-size:13px}
+.pv{width:100%;height:200px;object-fit:cover;border-radius:12px;margin:8px 0}.pv0{height:120px;display:grid;place-items:center;font-size:40px;background:#0003;border-radius:12px;margin:8px 0}
+.li{display:block;width:100%;text-align:left;background:#0003;color:var(--cream);border:1px solid #ffffff1a;border-radius:10px;padding:10px;margin:5px 0;font:inherit;cursor:pointer}
+.warn{background:#6b4a0f55;border:1px solid var(--gold);border-radius:10px;padding:10px;margin:8px 0}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.bgrid .card{padding:5px}.bgrid .art{height:70px}
+.book{background:#2a1d10;border:6px solid #4a3519;border-radius:10px;padding:12px;background-image:linear-gradient(90deg,#0004,transparent 6%)}.pagehd{text-align:center;color:var(--gold);font-family:Georgia;margin-bottom:8px}
+.pager{display:flex;justify-content:space-between;margin-top:10px}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(min-width:600px){.badges{grid-template-columns:repeat(3,1fr)}}
+.bd{background:var(--bg2);border:1px solid #ffffff14;border-radius:14px;padding:12px;text-align:center;opacity:.6;font-size:13px}.bd.on{opacity:1;border-color:var(--gold)}
+.pin{width:58px;height:58px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;font-size:28px;background:#2a3a31;filter:grayscale(1)}.bd.on .pin{filter:none;background:radial-gradient(circle at 30% 25%,#ffe29a,#c48a1e 70%);box-shadow:0 0 0 3px #7a5410,0 4px 10px #000a}
+.lbr{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #ffffff14}.lbr.you{background:#d9a44122;border-radius:10px}.lbr>b{width:22px;color:var(--gold)}.lbr .g{flex:1}
+.spread{display:grid;grid-template-columns:1fr 1fr;box-shadow:0 10px 30px #000a;border-radius:6px;overflow:hidden;margin:10px 0}
+.pg{background:#fbf5e6;color:#1b2a21;padding:10px;min-height:250px;font-size:12px}.pg:first-child{box-shadow:inset -12px 0 14px -10px #0004}.pg.cv{background:#14301f;color:var(--gold);text-align:center;display:grid;place-content:center;font-family:Georgia;font-size:18px}
+.ent{margin-bottom:8px}.ent .art{height:60px}.ent i{display:block;color:#56665c}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--cream);color:#1b2a21;padding:10px 16px;border-radius:12px;z-index:90;display:none;max-width:90%;text-align:center}
+.steps{display:flex;justify-content:space-around;font-size:30px;margin:12px 0}.steps span{animation:pop .6s both}.steps span:nth-child(2){animation-delay:.5s}.steps span:nth-child(3){animation-delay:1s}.steps span:nth-child(4){animation-delay:1.5s}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<button class="fab" data-a="add" aria-label="Add a beer">+</button>
+<nav id="nav" aria-label="Main"></nav>
+<div id="modal"></div>
+<div id="toast" role="status"></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const R=['Common','Uncommon','Rare','Epic','Legendary'],RC=['#9aa5a0','#5fb37c','#4a90d9','#a35fd6','#e8a93a'];
+// Scoring values — edit freely. Points are recomputed from the collection, so unique beers can never be double-counted.
+const BONUS=[0,25,50,100,200],PTS={unique:100,style:50,brewery:50,badge:25};
+// DEMO beers: fictional names/breweries. Scores are editorial placeholders, not facts. ABV intentionally omitted (unverified).
+const RAW=[['Pale Lantern','Lamplight Brewing','Pale Ale','England',0,38,'A bright, easy-going pale for a first stamp.'],['Copper Kettle Bitter','Lamplight Brewing','Bitter','England',0,28,'A classic pub-style bitter with a malty backbone.'],['Midnight Oat','Foundry & Fern','Stout','England',1,20,'Smooth and roasty with an oat-soft finish.'],['Tidewater IPA','Saltmarsh Brewing','IPA','England',1,190,'Citrus-forward and crisp, built for sharing.'],['Glen Ember','Highfold Brewing','Scotch Ale','Scotland',2,12,'Warming, toffee-leaning and rarely found south of the border.'],['Heather Gold','Highfold Brewing','Golden Ale','Scotland',1,48,'Light, floral and sessionable.'],['Dragon Lager','Cwm Hir Brewing','Lager','Wales',0,140,'Clean, crisp and refreshing.'],['Orchard Sour','Cwm Hir Brewing','Sour','Wales',2,330,'Tart orchard-fruit character in small batches.'],['Liffey Dry','Emerald Row','Stout','Ireland',1,150,'Dry, roasty and creamy.'],['Red Brogue','Emerald Row','Red Ale','Ireland',2,5,'Biscuity amber malt with a gentle hop bite.'],['Helles Morgen','Brauerei Nordlicht','Helles','Germany',1,52,'Soft, bready and golden.'],['Rauch Nacht','Brauerei Nordlicht','Rauchbier','Germany',3,25,'Smoky and savoury; a style worth seeking out.'],['Dubbel Dorp','Abdij Vale','Dubbel','Belgium',2,15,'Dark fruit and spice in a monastic style.'],['Saison Zwart','Abdij Vale','Saison','Belgium',3,60,'Peppery, dry and unusual.'],['Pilsner Prime','Zlatá Studna','Pilsner','Czechia',0,55,'Snappy, grassy and classic.'],['Koji Rice Lager','Kita Brewing','Lager','Japan',3,200,'Delicate and clean with a rice-led profile.'],['Yuzu Wit','Kita Brewing','Witbier','Japan',4,70,'A limited citrus wheat beer.'],['Barrel Ghost','Foundry & Fern','Barrel-Aged Stout','England',4,280,'A limited barrel release for dedicated collectors.'],['Hazy Meridian','Pacific Row','IPA','USA',2,170,'Juicy, soft and hazy.'],['Maple Lambic Cask','Abdij Vale','Lambic','Belgium',4,340,'A rare spontaneous-fermentation style.']];
+const B=RAW.map((x,i)=>({id:'b'+i,n:x[0],br:x[1],s:x[2],c:x[3],r:x[4],h:x[5],d:x[6],sc:[[15,35,60,80,95][x[4]],50+i*37%45,45+i*53%50,40+i*29%55,45+i*41%50]}));
+const SCL=[['Rarity','Availability and collecting difficulty — never ABV'],['Flavour character','Editorial score'],['Distinctiveness','Editorial score'],['Brewery story','Editorial score'],['Style exploration','How much it widens your palate']];
+const FR=[{n:'Sam',a:'🧔',own:[0,1,2,3,4,6,8,10,12,14,15,18],k:2,c:5},{n:'Priya',a:'👩‍🎤',own:[0,2,5,7,9,11,13,16,17,19,18,3],k:3,c:6},{n:'Jo',a:'🧑‍🍳',own:[0,1,6,8,14,10],k:1,c:3},{n:'Dev',a:'🎸',own:[0,14,4,6],k:0,c:2}];
+const SEASON=[{n:'Autumn Cask Season (demo)',d:'Collect beers from 3 different countries',cur:s=>s.co,t:3}];
+const BD=[['first','First Stamp','🔖','Collect your first beer',s=>s.n,1],['t10','Getting Started','🔟','Collect 10 unique beers',s=>s.n,10],['t25','Collector','📘','Collect 25 unique beers',s=>s.n,25],['t50','Serious Collector','📗','Collect 50 unique beers',s=>s.n,50],['t100','Master Binder','🏛️','Collect 100 unique beers',s=>s.n,100],
+['se','Style Explorer','🧭','Discover 5 styles',s=>s.st,5],['bp','Beyond the Pint','🍷','Discover 10 styles',s=>s.st,10],['bh','Brewery Hopper','🏭','Discover 5 breweries',s=>s.br,5],['wt','World Tour','✈️','Beers from 5 countries',s=>s.co,5],
+['rare','Hidden Gem','💎','Collect your first Rare beer',s=>s.rc[2],1],['epic','High Roller Collector','🎲','Collect your first Epic beer',s=>s.rc[3],1],['leg','Legend Found','👑','Collect your first Legendary beer',s=>s.rc[4],1],
+['gf','Group Founder','🚩','Create a group',()=>S.group&&S.group.created?1:0,1],['fr','Friendly Rivalry','⚔️','Join a group competition',()=>S.group?1:0,1],['tm','Tastemaker','🌟','Friends wishlist your discoveries (needs shared backend)',()=>0,1],
+['fp','Full Page','📄','Fill a page of the binder',s=>s.pg,1],['ch','Chapter Complete','📚','Complete every beer from one brewery',s=>s.ch,1],['pb','Perfect Binder','🏆','Complete the full collection',s=>s.n,B.length]];
+const LOGO='<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="#d9a441" stroke-width="2" stroke-dasharray="3 2"/><path d="M11 8h10l-1 15a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z" fill="#d9a441"/><rect x="12" y="11" width="8" height="3" fill="#0d1a14"/></svg>';
+const BOT='<svg width="40" viewBox="0 0 40 70" aria-hidden="true"><path d="M16 2h8v14l5 8v42a3 3 0 0 1-3 3H14a3 3 0 0 1-3-3V24l5-8z" fill="#ffffffe0"/><rect x="13" y="34" width="14" height="20" rx="2" fill="#0006"/></svg>';
+const TABS=[['binder','My Binder','📘'],['disc','Discover','🔍'],['fr','Friends','👥'],['ch','Challenges','🏅'],['me','Profile','👤']];
+const today=()=>new Date().toISOString().slice(0,10);
+let S;try{S=JSON.parse(localStorage.getItem('bb1')||'null')}catch(e){}
+S=S||{col:{},custom:[],badges:{},wish:{},react:{},name:'',av:'🍺',bio:'',priv:'friends',demo:false,group:null,draft:null,wl:'',ob:false};
+const save=()=>{try{localStorage.setItem('bb1',JSON.stringify(S))}catch(e){toast('Storage is full. Remove a memory photo or use a smaller image.')}};
+let V='binder',F={q:'',s:'',r:'',c:'',br:'',st:'all',sort:'recent',mode:'grid',pg:0},A=null,LB='pts',DQ='',DS='',SP=0;
+const all=()=>B.concat(S.custom),get=id=>all().find(b=>b.id===id),ver=()=>Object.keys(S.col).map(get).filter(b=>b&&!b.cu);
+const uq=k=>[...new Set(all().map(b=>b[k]))].sort();
+function calc(l,bonus=0){const st=new Set(l.map(b=>b.s)),br=new Set(l.map(b=>b.br)),co=new Set(l.map(b=>b.c)),rc=[0,0,0,0,0];l.forEach(b=>rc[b.r]++);
+return{n:l.length,st:st.size,br:br.size,co:co.size,rc,rare:l.reduce((m,b)=>b.r>m?b.r:m,-1),pts:l.reduce((a,b)=>a+PTS.unique+BONUS[b.r],0)+PTS.style*st.size+PTS.brewery*br.size+bonus}}
+const me=()=>calc(ver(),PTS.badge*Object.keys(S.badges).length);
+const recent=d=>ver().filter(b=>Date.now()-S.col[b.id].t<d*864e5).reduce((a,b)=>a+PTS.unique+BONUS[b.r],0);
+const PG=6,pages=()=>{let c=0;for(let i=0;i+PG<=B.length;i+=PG)if(B.slice(i,i+PG).every(b=>S.col[b.id]))c++;return c};
+const chap=()=>{const m={};B.forEach(b=>(m[b.br]=m[b.br]||[]).push(b));return Object.values(m).filter(a=>a.length>1&&a.every(b=>S.col[b.id])).length};
+const full=()=>({...me(),pg:pages(),ch:chap()});
+function checkBadges(){const s=full(),n=[];BD.forEach(d=>{if(!S.badges[d[0]]&&d[4](s)>=d[5]){S.badges[d[0]]=today();n.push(d)}});return n}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3200)}
+const shrink=f=>new Promise(res=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=Math.min(1,480/i.width),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.7))};i.onerror=()=>res(null);i.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(f)});
+const photo=b=>{const m=S.col[b.id]&&S.col[b.id].mems.find(m=>m.ph);return m?m.ph:''};
+const art=b=>{const p=photo(b);return `<div class="art" style="--h:${b.h};${p?`background-image:url(${p})`:''}">${p?'':BOT}</div>`};
+const card=(b,hide)=>{const o=S.col[b.id],h=hide&&!o;return `<div class="card r${b.r}${o?'':' lock'}" data-a="open" data-id="${b.id}" style="--rc:${RC[b.r]}" tabindex="0" role="button" aria-label="${h?'Locked beer':esc(b.n)}">${h?'<div class="art" style="--h:150"><span class="q">?</span></div><h4>???</h4><small>Not yet collected</small>':`${art(b)}<h4>${esc(b.n)}</h4><small>${esc(b.br)}</small><small>${esc(b.s)} · ${esc(b.c)}</small>`}<span class="tag" style="background:${RC[b.r]}">${b.cu?'Pending review':R[b.r]}</span>${o?'<span class="stamp">COLLECTED</span>':''}</div>`};
+const hdr=t=>`<div class="top"><div class="logo">${LOGO}<span>${t}</span></div><div>${S.demo?'<span class="chip">DEMO DATA</span> ':''}<span class="chip gold">${me().pts} pts</span></div></div>`;
+const opts=(a,sel,l)=>`<option value="">${l}</option>`+a.map(x=>`<option${String(x)===String(sel)?' selected':''}>${esc(x)}</option>`).join('');
+function render(){$('#app').innerHTML=({binder:vBinder,disc:vDisc,fr:vFriends,ch:vChal,me:vProfile})[V]();
+$('#nav').innerHTML=TABS.map(t=>`<button data-a="tab" data-v="${t[0]}" class="${V===t[0]?'a':''}" ${V===t[0]?'aria-current="page"':''}><b>${t[2]}</b>${t[1]}</button>`).join('');
+drawList();drawDisc();if(!S.ob&&!$('.ov'))onboard()}
+/* ---------- Binder ---------- */
+function vBinder(){const s=me(),tot=B.length,pct=Math.round(s.n/tot*100);let cp=0;for(let i=0;i<B.length;i+=PG){const p=B.slice(i,i+PG),g=p.filter(b=>S.col[b.id]).length;if(g<p.length){cp=`Page ${i/PG+1}: ${g}/${p.length}`;break}}
+return `${hdr('My Binder')}<div class="panel"><div class="row2"><b>${pct}% complete</b><span class="mut">${s.n} of ${tot} beers</span></div><div class="bar"><i style="width:${pct}%"></i></div>
+<div class="stats"><div class="stat"><b>${s.n}</b>Unique</div><div class="stat"><b>${s.br}</b>Breweries</div><div class="stat"><b>${s.st}</b>Styles</div><div class="stat"><b>${s.co}</b>Countries</div></div>
+<div class="rar">${R.map((r,i)=>`<span style="color:${RC[i]}">${r} ${s.rc[i]}/${B.filter(b=>b.r==i).length}</span>`).join('')}</div>
+<p class="mut" style="margin-top:8px">${cp?`Current page — ${cp}`:'Every page is complete!'}</p></div>
+<div class="row2" style="margin-bottom:8px"><input id="fq" placeholder="Search name or brewery" value="${esc(F.q)}" aria-label="Search binder" style="flex:1"><button class="btn ${F.mode==='grid'?'on':''}" data-a="mode" data-v="grid">Grid</button><button class="btn ${F.mode==='book'?'on':''}" data-a="mode" data-v="book">Book</button></div>
+<details class="panel"><summary>Filters &amp; sorting</summary><div class="filters">
+<select data-f="s" aria-label="Style">${opts(uq('s'),F.s,'All styles')}</select><select data-f="br" aria-label="Brewery">${opts(uq('br'),F.br,'All breweries')}</select><select data-f="c" aria-label="Country">${opts(uq('c'),F.c,'All countries')}</select>
+<select data-f="r" aria-label="Rarity"><option value="">All rarities</option>${R.map((r,i)=>`<option value="${i}"${F.r==i&&F.r!==''?' selected':''}>${r}</option>`).join('')}</select>
+<select data-f="st" aria-label="Status">${[['all','All beers'],['got','Collected'],['miss','Not collected']].map(x=>`<option value="${x[0]}"${F.st===x[0]?' selected':''}>${x[1]}</option>`).join('')}</select>
+<select data-f="sort" aria-label="Sort">${[['recent','Recently collected'],['rar','Rarity'],['az','A–Z'],['br','Brewery']].map(x=>`<option value="${x[0]}"${F.sort===x[0]?' selected':''}>${x[1]}</option>`).join('')}</select></div></details>
+<button class="btn pri" data-a="print" style="width:100%;margin-bottom:12px">Print my binder</button><div id="list"></div>`}
+function filtered(){const q=F.q.toLowerCase(),o=b=>S.col[b.id];
+const l=all().filter(b=>(!q||(b.n+b.br).toLowerCase().includes(q))&&(!F.s||b.s===F.s)&&(F.r===''||b.r==F.r)&&(!F.c||b.c===F.c)&&(!F.br||b.br===F.br)&&(F.st==='all'||(F.st==='got')===!!o(b)));
+const f={recent:(a,b)=>((o(b)||{}).t||0)-((o(a)||{}).t||0),rar:(a,b)=>b.r-a.r,az:(a,b)=>a.n.localeCompare(b.n),br:(a,b)=>a.br.localeCompare(b.br)||a.n.localeCompare(b.n)}[F.sort];return l.sort(f)}
+function drawList(){const el=$('#list');if(!el)return;
+if(F.mode==='book'){const l=all(),np=Math.ceil(l.length/PG);F.pg=Math.max(0,Math.min(F.pg,np-1));const p=l.slice(F.pg*PG,F.pg*PG+PG),full=p.every(b=>S.col[b.id]);
+el.innerHTML=`<div class="book"><div class="pagehd">Page ${F.pg+1} of ${np}${full?' ✓ Full page':''}</div><div class="bgrid">${p.map(b=>card(b,true)).join('')}</div></div><div class="pager"><button class="btn" data-a="pg" data-d="-1">‹ Previous</button><button class="btn" data-a="pg" data-d="1">Next ›</button></div>`;return}
+const l=filtered();el.innerHTML=l.length?`<div class="grid">${l.map(b=>card(b)).join('')}</div>`:'<div class="empty">No beers match these filters. Clear a filter, or tap + to record a discovery.</div>'}
+/* ---------- Card detail ---------- */
+function detail(id){const b=get(id),o=S.col[id];
+const bars=b.sc?b.sc.map((v,i)=>`<div class="row2"><b>${SCL[i][0]}</b><span>${v}/100</span></div><div class="bar"><i style="width:${v}%"></i></div><small class="m" style="color:#56665c">${SCL[i][1]}</small>`).join(''):'<p>Unrated: this beer is awaiting review.</p>';
+const mem=o?o.mems.map(m=>`<p style="margin-top:6px"><b>${esc(m.d)}</b> ${m.loc?'@ '+esc(m.loc):''} ${m.w?'with '+esc(m.w):''}<br>${m.note?`“${esc(m.note)}”`:''}</p>`).join(''):'';
+modal(`<div class="flip"><div class="fi" id="fi" data-a="flip" style="--rc:${RC[b.r]}"><div class="face front"><div class="card r${b.r}" style="--rc:${RC[b.r]}">${art(b)}<h4>${esc(b.n)}</h4><small>${esc(b.br)}</small><small>${esc(b.s)} · ${esc(b.c)}</small><small>ABV: not verified</small><span class="tag" style="background:${RC[b.r]}">${b.cu?'Pending review':R[b.r]}</span>${o?'<span class="stamp new">COLLECTED</span>':''}<p style="margin-top:10px;font-size:13px">${esc(b.d)}</p><small style="margin-top:10px">Tap card to flip</small></div></div>
+<div class="face back"><h4 style="font-size:18px">${esc(b.n)}: stats</h4>${bars}<p style="margin:8px 0;font-size:12px">Scores are editorial placeholders, not objective facts.</p>${mem?'<b>Your memories</b>'+mem:''}</div></div></div>
+<div class="row2"><button class="btn pri" data-a="collect" data-id="${id}">${o?'Add another memory':'Collect this beer'}</button><button class="btn ${S.wish[id]?'on':''}" data-a="wish" data-id="${id}">${S.wish[id]?'★ On wishlist':'☆ Wishlist'}</button><button class="btn" data-a="close">Close</button></div>`)}
+function modal(h){$('#modal').innerHTML=`<div class="ov" data-a="close"><div class="sheet" role="dialog" aria-modal="true">${h}</div></div>`}
+const close=()=>$('#modal').innerHTML='';
+/* ---------- Add flow ---------- */
+const srHTML=()=>{const q=A.q.toLowerCase(),l=all().filter(b=>!q||(b.n+b.br+b.s).toLowerCase().includes(q)).slice(0,8);return l.length?l.map(b=>`<button class="li" data-a="pick" data-id="${b.id}"><b>${esc(b.n)}</b> · ${esc(b.br)}<br><small class="m">${esc(b.s)} · ${R[b.r]}${S.col[b.id]?' · ✓ in your binder':''}</small></button>`).join(''):'<p class="mut">No match. Add it manually below.</p>'};
+function addUI(){const b=A.beer;let h='';
+if(A.step===1)h=`<h3>Photograph it</h3><p class="mut">A can, bottle, pump clip, pint or brewery sign all work.</p>${A.photo?`<img class="pv" src="${A.photo}" alt="Your photo">`:'<div class="pv0">📷</div>'}<div class="row2"><label class="btn">Camera<input hidden type="file" accept="image/*" capture="environment" id="fi2"></label><label class="btn">Gallery<input hidden type="file" accept="image/*" id="fg"></label></div><p class="mut" style="margin:10px 0">Automatic photo recognition isn’t connected yet. You’ll pick the beer yourself.</p><div class="row2"><button class="btn pri" data-a="n1">${A.photo?'Next':'Skip photo'}</button><button class="btn" data-a="close">Cancel</button></div>`;
+if(A.step===2)h=`<h3>Which beer is it?</h3><input id="sq" placeholder="Search beer, brewery or style" value="${esc(A.q)}" aria-label="Search beers"><div id="sr">${srHTML()}</div><button class="btn" data-a="man" style="margin-top:8px">Not listed? Add it manually</button>${A.man?'<div class="panel" style="margin-top:8px"><input id="mn" placeholder="Beer name *"><input id="mb" placeholder="Brewery *"><input id="ms" placeholder="Style (optional)"><p class="mut">Goes to review. No points until verified.</p><button class="btn pri" data-a="mk">Save for review</button></div>':''}`;
+if(A.step===3){const dup=S.col[b.id];h=`<h3>Confirm &amp; add a memory</h3><div class="panel"><b>${esc(b.n)}</b><br>${esc(b.br)} · ${esc(b.s)} · ${esc(b.c)}<br><span class="tag" style="background:${RC[b.r]};color:#10200f">${b.cu?'Pending review':R[b.r]}</span> <button class="btn" data-a="wrong" style="padding:3px 10px;margin-left:6px">Wrong beer?</button></div>${dup?'<div class="warn">You already have this beer. It won’t count twice, but you can save another memory or photo.</div>':''}${A.photo?`<img class="pv" src="${A.photo}" alt="Your photo" style="height:110px">`:''}
+<label class="f">Date discovered<input type="date" id="md" value="${today()}"></label><label class="f">Where? (pub, bar, brewery, festival)<input id="ml" maxlength="80"></label><label class="f">Who with?<input id="mw" maxlength="80"></label><label class="f">Note<textarea id="mt" rows="2" maxlength="240"></textarea></label><button class="btn pri" data-a="commit" style="width:100%;margin-top:10px">Stamp it</button>`}
+if(A.step===4)h=`<h3 style="text-align:center">${A.dup?'Memory added':'Collected!'}</h3><div style="max-width:200px;margin:10px auto">${card(b).replace('class="stamp"','class="stamp new"').replace(' lock','').replace('<span class="stamp">','<span class="stamp new">')}</div><p style="text-align:center"><b class="gold" style="font-size:20px">+${A.gain} pts</b><br><span class="mut">${A.dup?'Duplicates earn no unique points.':b.cu?'No points until reviewed.':`${me().n}/${B.length} beers in your binder`}</span></p>${A.nb.map(d=>`<div class="warn">${d[2]} Badge unlocked: <b>${d[1]}</b></div>`).join('')}<button class="btn pri" data-a="done" style="width:100%;margin-top:10px">Back to binder</button>`;
+modal(h)}
+/* ---------- Discover ---------- */
+function vDisc(){const mine=new Set(ver().map(b=>b.s)),un=all().filter(b=>!S.col[b.id]),rec=un.filter(b=>!mine.has(b.s)).sort((a,b)=>a.r-b.r).slice(0,5);
+return `${hdr('Discover')}<input id="dq" placeholder="Search beer or brewery" value="${esc(DQ)}" aria-label="Search beers"><div class="hs" style="padding-top:8px">${uq('s').map(s=>`<button class="btn ${DS===s?'on':''}" data-a="ds" data-v="${esc(s)}" style="flex:0 0 auto;padding:6px 12px">${esc(s)}</button>`).join('')}</div><div id="dres"></div>
+<h3>What should I collect next?</h3><p class="mut">Easiest picks from styles you haven’t tried.</p><div class="hs">${rec.map(b=>card(b)).join('')||'<p class="empty">You’ve explored every style in the sample set.</p>'}</div>
+<h3>Featured (editorial demo picks)</h3><div class="hs">${B.filter(b=>b.r>=3).map(b=>card(b)).join('')}</div>
+<h3>New and noteworthy</h3><p class="mut">Newest additions to the sample database.</p><div class="hs">${B.slice(-5).map(b=>card(b)).join('')}</div>
+<div class="panel"><b>Local breweries &amp; festivals</b><p class="mut">Needs location access and a real brewery/event data source. Not connected, so nothing is shown rather than invented. We also don’t show pub stock or availability.</p></div>`}
+function drawDisc(){const e=$('#dres');if(!e)return;const q=DQ.toLowerCase();if(!q&&!DS){e.innerHTML='';return}const l=all().filter(b=>(!q||(b.n+b.br).toLowerCase().includes(q))&&(!DS||b.s===DS));e.innerHTML=l.length?`<div class="grid" style="margin:8px 0 16px">${l.map(b=>card(b)).join('')}</div>`:'<div class="empty">No matches. Try another search, or add a beer manually from the + button.</div>'}
+/* ---------- Friends ---------- */
+const LBM={pts:['All-time points',r=>r.s.pts],wk:['This week',r=>r.wk],mo:['This month',r=>r.mo],n:['Most unique beers',r=>r.s.n],rare:['Rarest collection',r=>r.s.rc[4]*1e4+r.s.rc[3]*100+r.s.rc[2]],st:['Most styles',r=>r.s.st],br:['Most breweries',r=>r.s.br],c:['Most challenges',r=>r.c]};
+const pv=l=>l.reduce((a,b)=>a+PTS.unique+BONUS[b.r],0);
+function rows(){const m=me(),r=FR.map(f=>{const l=f.own.map(i=>B[i]);return{n:f.n,a:f.a,s:calc(l),wk:pv(l.slice(f.k?-f.k:l.length)),mo:pv(l.slice(-f.k*3)),c:f.c,l}});if(!f.k&&0);r.forEach((x,i)=>{if(!FR[i].k)x.wk=0});
+r.push({n:(S.name||'You')+' (you)',a:S.av,s:m,wk:recent(7),mo:recent(30),c:Object.keys(S.badges).length,you:1,l:ver()});return r.sort((a,b)=>LBM[LB][1](b)-LBM[LB][1](a))}
+function vFriends(){const g=S.group||{name:'The Binder Club (demo)',code:'DEMO-4821'},rs=rows(),union=new Set([...ver().map(b=>b.id),...FR.flatMap(f=>f.own.map(i=>'b'+i))]).size;
+const feed=FR.map((f,i)=>{const b=B[f.own[f.own.length-1]],k='f'+i;return `<div class="lbr"><span>${f.a}</span><span class="g"><b>${f.n}</b> stamped <b>${esc(b.n)}</b> <span style="color:${RC[b.r]}">(${R[b.r]})</span></span><button class="btn ${S.react[k]?'on':''}" data-a="react" data-k="${k}" style="padding:4px 10px" aria-label="React">🍻 ${S.react[k]?1:0}</button></div>`}).join('');
+return `${hdr('Friends')}<div class="panel"><b>Demo group.</b> <span class="mut">Friends below are sample data on this device. Real shared groups across devices need a backend (see README).</span><h3 style="margin-top:10px">${esc(g.name)}</h3><p class="mut">Invite code: <b class="gold">${esc(g.code)}</b></p><div class="row2" style="margin-top:8px"><button class="btn" data-a="mkgrp">Create group</button><button class="btn" data-a="join">Join with code</button></div></div>
+<div class="panel"><div class="row2"><b>Group goal: complete the set together</b><span>${union}/${B.length}</span></div><div class="bar"><i style="width:${union/B.length*100}%"></i></div></div>
+<select data-lb="1" aria-label="Leaderboard">${Object.entries(LBM).map(([k,v])=>`<option value="${k}"${LB===k?' selected':''}>${v[0]}</option>`).join('')}</select>
+<div class="panel">${rs.map((r,i)=>`<div class="lbr ${r.you?'you':''}"><b>${i+1}</b><span>${r.a}</span><span class="g">${esc(r.n)}<br><small class="m">${r.s.n} beers · ${r.s.st} styles · best: ${r.s.rare<0?'none':R[r.s.rare]}</small></span><b>${LB==='rare'?(r.s.rc[3]+r.s.rc[4])+' E/L':LBM[LB][1](r)}</b>${r.you?'':`<button class="btn" data-a="cmp" data-n="${esc(r.n)}" style="padding:4px 10px">Compare</button>`}</div>`).join('')}</div>
+<h3>Recent discoveries</h3><div class="panel">${feed}</div><button class="btn" data-a="chal" style="width:100%">Challenge a friend to try a style</button>
+<details class="panel" style="margin-top:12px"><summary>How points work</summary><p class="mut">${PTS.unique} per unique beer, + ${BONUS.slice(1).map((b,i)=>R[i+1]+' '+b).join(', ')}; ${PTS.style} per new style; ${PTS.brewery} per new brewery; ${PTS.badge} per badge. Points are recalculated from your collection, so repeats never score twice. Rewards discovery, not drinking.</p></details>`}
+/* ---------- Challenges ---------- */
+function vChal(){const s=full(),n=Object.keys(S.badges).length;
+return `${hdr('Challenges')}<div class="panel"><b>${n} of ${BD.length} badges earned</b><div class="bar"><i style="width:${n/BD.length*100}%"></i></div></div>
+${SEASON.map(x=>{const v=Math.min(x.cur(s),x.t);return `<div class="panel"><b>${esc(x.n)}</b><p class="mut">${esc(x.d)}</p><div class="bar"><i style="width:${v/x.t*100}%"></i></div>${v}/${x.t}</div>`}).join('')}
+<div class="badges">${BD.map(d=>{const on=S.badges[d[0]],v=Math.min(d[4](s),d[5]);return `<div class="bd ${on?'on':''}"><div class="pin">${d[2]}</div><b>${d[1]}</b><br>${d[3]}<div class="bar"><i style="width:${v/d[5]*100}%"></i></div>${on?'Earned '+on:`${v}/${d[5]}`}</div>`}).join('')}</div>`}
+/* ---------- Profile ---------- */
+function vProfile(){const s=me(),v=ver(),sc={};v.forEach(b=>sc[b.s]=(sc[b.s]||0)+1);const fav=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]).join(', ')||'None yet',rb=v.sort((a,b)=>b.r-a.r)[0],pct=Math.round(s.n/B.length*100),
+act=Object.entries(S.col).flatMap(([id,o])=>o.mems.map(m=>({b:get(id),m}))).sort((a,b)=>b.m.t-a.m.t).slice(0,5);
+return `${hdr('Profile')}<div class="panel" style="text-align:center"><div style="font-size:48px">${S.av}</div><h2>${esc(S.name||'Collector')}</h2><p class="mut">${esc(S.bio)||'No bio yet'}</p><div class="stats"><div class="stat"><b>${pct}%</b>Complete</div><div class="stat"><b>${s.n}</b>Beers</div><div class="stat"><b>${s.pts}</b>Points</div><div class="stat"><b>${Object.keys(S.badges).length}</b>Badges</div></div>
+<p>Favourite styles: ${esc(fav)}<br>Rarest: ${rb?esc(rb.n)+' ('+R[rb.r]+')':'none yet'}<br>Countries: ${[...new Set(v.map(b=>b.c))].join(', ')||'none yet'}<br>Group: ${S.group?esc(S.group.name):'none'}</p><button class="btn pri" data-a="share" style="margin-top:10px">Share profile card</button></div>
+<div class="panel"><label class="f">Username<input data-pf="name" value="${esc(S.name)}" maxlength="20"></label><label class="f">Bio<textarea data-pf="bio" rows="2" maxlength="120">${esc(S.bio)}</textarea></label><label class="f">Profile visibility<select data-pf="priv">${[['public','Public'],['friends','Friends only'],['private','Private']].map(x=>`<option value="${x[0]}"${S.priv===x[0]?' selected':''}>${x[1]}</option>`).join('')}</select></label><label class="f">Avatar<select data-pf="av">${['🍺','🍻','🧔','👩‍🎤','🦊','🐻','🚀'].map(x=>`<option${S.av===x?' selected':''}>${x}</option>`).join('')}</select></label></div>
+<h3>Recent activity</h3><div class="panel">${act.map(a=>`<div class="lbr"><span class="g"><b>${esc(a.b.n)}</b><br><small class="m">${esc(a.m.d)} ${a.m.loc?'· '+esc(a.m.loc):''}</small></span></div>`).join('')||'<p class="mut">Nothing yet. Tap + to add your first beer.</p>'}</div>
+<div class="row2"><button class="btn pri" data-a="print">Print my binder</button><button class="btn" data-a="reset">Reset all data</button></div>`}
+/* ---------- Print ---------- */
+function printUI(){const l=Object.keys(S.col).map(get).filter(Boolean),d=S.draft=S.draft||{title:(S.name||'My')+'’s Beer Binder',size:'A5',fin:'matte',memo:true},n=Math.ceil(l.length/4),sp=Math.min(SP,n);
+const ent=b=>{const o=S.col[b.id],m=o.mems.find(m=>m.note);return `<div class="ent">${art(b)}<b>${esc(b.n)}</b><br>${esc(b.br)} · ${R[b.r]}<i>Stamped ${esc(o.first)}</i>${d.memo&&m?`<i>“${esc(m.note)}”</i>`:''}</div>`};
+const pr=((d.size==='A4'?49.99:34.99)+({matte:0,gloss:4,foil:8})[d.fin]+.5*n).toFixed(2);
+const pgs=sp===0?`<div class="pg cv">${esc(d.title)}<small>${l.length} beers collected</small></div><div class="pg"><b>This book belongs to ${esc(S.name||'a collector')}</b><p>${me().n} unique beers · ${me().br} breweries · ${me().st} styles</p></div>`:`<div class="pg">${l.slice((sp-1)*4,(sp-1)*4+2).map(ent).join('')}</div><div class="pg">${l.slice((sp-1)*4+2,sp*4).map(ent).join('')}</div>`;
+modal(`<h3>Print my binder</h3>${l.length?`<div class="spread" aria-label="Book preview">${pgs}</div><div class="row2"><button class="btn" data-a="sp" data-d="-1">‹</button><span class="mut">${sp===0?'Cover':'Spread '+sp+' of '+n}</span><button class="btn" data-a="sp" data-d="1">›</button></div>`:'<div class="empty">Collect a beer first. Your book is built from your binder.</div>'}
+<label class="f">Cover title<input data-p="title" value="${esc(d.title)}" maxlength="40"></label><div class="filters"><select data-p="size" aria-label="Size"><option value="A5"${d.size==='A5'?' selected':''}>A5 hardback</option><option value="A4"${d.size==='A4'?' selected':''}>A4 hardback</option></select><select data-p="fin" aria-label="Finish"><option value="matte"${d.fin==='matte'?' selected':''}>Matte cover</option><option value="gloss"${d.fin==='gloss'?' selected':''}>Gloss laminate +£4</option><option value="foil"${d.fin==='foil'?' selected':''}>Foil stamp +£8</option></select></div>
+<label class="f"><input type="checkbox" data-p="memo" ${d.memo?'checked':''} style="width:auto"> Include my notes</label><p style="margin:10px 0"><b class="gold" style="font-size:22px">£${pr}</b> <span class="mut">illustrative price, not final</span></p>
+<div class="panel"><b>Ordering isn’t live yet.</b><p class="mut">No print supplier or payment provider is connected. Nothing is ordered or charged. The waitlist email below is stored on this device only.</p><input id="wl" type="email" placeholder="Email for the waitlist" value="${esc(S.wl)}"></div>
+<div class="row2"><button class="btn" data-a="draft">Save draft</button><button class="btn pri" data-a="wl">Join waitlist (demo)</button><button class="btn" data-a="close">Close</button></div>`)}
+/* ---------- Onboarding ---------- */
+function onboard(){$('#modal').innerHTML=`<div class="ov"><div class="sheet" role="dialog" aria-modal="true"><div class="logo">${LOGO}Beer Binder</div><h2 style="margin:8px 0">Find it. Snap it. Stamp it. Collect it.</h2><div class="steps" aria-hidden="true"><span>🔍</span><span>📷</span><span>🔖</span><span>📘</span></div><p class="mut">Collect the beers you discover. It rewards variety and curiosity, not how much you drink. You must be 18+. Please enjoy responsibly.</p><input id="obn" placeholder="Choose a username" maxlength="20" aria-label="Username"><label class="f"><input type="checkbox" id="oba" style="width:auto"> I’m 18 or over</label><p class="mut" style="margin:8px 0">Accounts need a backend. For now everything stays on this device.</p><button class="btn pri" data-a="obd" style="width:100%;margin-bottom:8px">Explore with a demo collection</button><button class="btn" data-a="obe" style="width:100%">Start with an empty binder</button></div></div>`}
+function startOb(demo){const n=$('#obn').value.trim();if(!n||!$('#oba').checked){toast('Enter a username and confirm you’re 18 or over.');return}S.name=n;S.ob=true;S.demo=demo;if(demo)[0,1,2,3,6,8,11].forEach((i,k)=>{const t=Date.now()-k*2*864e5;S.col['b'+i]={first:new Date(t).toISOString().slice(0,10),t,mems:[{d:new Date(t).toISOString().slice(0,10),loc:'Demo pub',note:'Sample memory (demo data)',w:'',ph:'',t}]}});checkBadges();save();close();render()}
+/* ---------- Events ---------- */
+const act={
+tab:d=>{V=d.v;render();scrollTo(0,0)},add:()=>{A={step:1,beer:null,photo:null,q:'',man:0};addUI()},close,
+open:d=>detail(d.id),flip:()=>$('#fi').classList.toggle('f'),
+collect:d=>{A={step:1,beer:get(d.id),photo:null,q:'',man:0};addUI()},
+wish:d=>{S.wish[d.id]=!S.wish[d.id];save();detail(d.id)},
+mode:d=>{F.mode=d.v;render()},pg:d=>{F.pg+=+d.d;drawList()},ds:d=>{DS=DS===d.v?'':d.v;render()},
+n1:()=>{A.step=A.beer?3:2;addUI()},man:()=>{A.man=1;addUI()},wrong:()=>{A.beer=null;A.step=2;addUI()},
+pick:d=>{A.beer=get(d.id);A.step=3;addUI()},
+mk:()=>{const n=$('#mn').value.trim(),b=$('#mb').value.trim();if(!n||!b){toast('Beer name and brewery are required.');return}const nb={id:'c'+Date.now(),n,br:b,s:$('#ms').value.trim()||'Unknown',c:'Unknown',r:0,h:Math.floor(Math.random()*360),d:'Submitted by you and awaiting review. No points until verified.',sc:null,cu:true};S.custom.push(nb);A.beer=nb;A.step=3;save();addUI()},
+commit:()=>{const b=A.beer,before=me().pts,m={d:$('#md').value||today(),loc:$('#ml').value.trim(),w:$('#mw').value.trim(),note:$('#mt').value.trim(),ph:A.photo||'',t:Date.now()};A.dup=!!S.col[b.id];
+if(A.dup)S.col[b.id].mems.push(m);else S.col[b.id]={first:m.d,t:m.t,mems:[m]};A.nb=checkBadges();A.gain=me().pts-before;save();A.step=4;addUI()},
+done:()=>{close();V='binder';render()},
+react:d=>{S.react[d.k]=!S.react[d.k];save();render()},
+mkgrp:()=>{const n=prompt('Group name?');if(!n)return;S.group={name:n.slice(0,30),code:'BB-'+Math.random().toString(36).slice(2,6).toUpperCase(),created:true};const nb=checkBadges();save();render();toast('Group created on this device only. '+(nb.length?'Badge unlocked!':''))},
+join:()=>{const c=(prompt('Invite code?')||'').trim().toUpperCase();if(!c)return;if(c==='DEMO-4821'){S.group={name:'The Binder Club (demo)',code:c};checkBadges();save();render();toast('Joined the demo group.')}else toast('Code not found. Real invites need a shared backend.')},
+cmp:d=>{const f=rows().find(r=>r.n===d.n),mine=new Set(ver().map(b=>b.id)),th=new Set(f.l.map(b=>b.id)),nm=s=>[...s].map(i=>get(i).n).join(', ')||'none';modal(`<h3>You vs ${esc(f.n)}</h3><p><b>Both have:</b> ${esc(nm([...mine].filter(i=>th.has(i))))}</p><p style="margin-top:8px"><b>Only you:</b> ${esc(nm([...mine].filter(i=>!th.has(i))))}</p><p style="margin-top:8px"><b>Only ${esc(f.n)}:</b> ${esc(nm([...th].filter(i=>!mine.has(i))))}</p><button class="btn" data-a="close" style="margin-top:12px">Close</button>`)},
+chal:()=>toast('Challenge sent (demo only). Real challenges need a shared backend.'),
+share:async()=>{const s=me(),t=`${S.name||'I'}’s Beer Binder: ${s.n} unique beers, ${s.pts} pts.`;try{if(navigator.share)await navigator.share({text:t});else{await navigator.clipboard.writeText(t);toast('Profile summary copied.')}}catch(e){}},
+reset:()=>{if(confirm('Delete all data on this device?')){localStorage.removeItem('bb1');location.reload()}},
+print:()=>{SP=0;printUI()},sp:d=>{SP=Math.max(0,SP+ +d.d);printUI()},draft:()=>{save();toast('Draft saved on this device.')},
+wl:()=>{const e=$('#wl').value.trim();if(!/^\S+@\S+\.\S+$/.test(e)){toast('Enter a valid email address.');return}S.wl=e;save();toast('Saved on this device only. No order placed, no payment taken.')},
+obd:()=>startOb(true),obe:()=>startOb(false)};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;if(el.classList.contains('ov')&&e.target!==el)return;const f=act[el.dataset.a];if(f)f(el.dataset)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList.contains('card'))e.target.click();if(e.key==='Escape'&&S.ob)close()});
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='fq'){F.q=t.value;drawList()}else if(t.id==='dq'){DQ=t.value;drawDisc()}else if(t.id==='sq'){A.q=t.value;$('#sr').innerHTML=srHTML()}});
+document.addEventListener('change',async e=>{const t=e.target,d=t.dataset;
+if(d.f){F[d.f]=t.value;drawList()}
+else if(t.id==='fi2'||t.id==='fg'){const f=t.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Please choose an image file.');return}A.photo=await shrink(f);if(!A.photo)toast('That image couldn’t be read. Try another.');addUI()}
+else if(d.p){S.draft[d.p]=t.type==='checkbox'?t.checked:t.value;save();printUI()}
+else if(d.pf){S[d.pf]=t.value;save();if(d.pf==='av')render()}
+else if(d.lb){LB=t.value;render()}});
+render();
+</script>
+</body>
+</html>
